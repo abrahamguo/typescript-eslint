@@ -15,6 +15,7 @@ import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import simpleImportSortPlugin from 'eslint-plugin-simple-import-sort';
+import sonarJsPlugin from 'eslint-plugin-sonarjs';
 import unicornPlugin from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -39,6 +40,7 @@ export default tseslint.config(
       ['react-hooks']: reactHooksPlugin,
       ['react']: reactPlugin,
       ['simple-import-sort']: simpleImportSortPlugin,
+      ['sonarjs']: sonarJsPlugin,
       ['unicorn']: unicornPlugin,
     },
   },
@@ -68,6 +70,7 @@ export default tseslint.config(
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   jsdocPlugin.configs['flat/recommended-typescript-error'],
+  ...compat.config(sonarJsPlugin.configs.recommended),
 
   // base config
   {
