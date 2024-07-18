@@ -1,4 +1,5 @@
-'use strict';
+import { createRule } from '../util';
+
 const {
   findVariable,
   getFunctionHeadLocation,
@@ -69,89 +70,85 @@ const isInPromiseMethods = node =>
   }) &&
   node.parent.parent.arguments[0] === node.parent;
 
-/** @param {import('eslint').Rule.RuleContext} context */
-function create(context) {
-  if (context.filename.toLowerCase().endsWith('.cjs')) {
-    return;
-  }
+export default createRule({
+  create(context) {
+    if (context.filename.toLowerCase().endsWith('.cjs')) {
+      return;
+    }
 
-  return {
-    CallExpression(node) {
-      if (
-        !isTopLevelCallExpression(node) ||
-        isPromiseMethodCalleeObject(node) ||
-        isAwaitExpressionArgument(node) ||
-        isInPromiseMethods(node)
-      ) {
-        return;
-      }
+    return {
+      CallExpression(node) {
+        if (
+          !isTopLevelCallExpression(node) ||
+          isPromiseMethodCalleeObject(node) ||
+          isAwaitExpressionArgument(node) ||
+          isInPromiseMethods(node)
+        ) {
+          return;
+        }
 
-      // Promises
-      if (
-        isMemberExpression(node.callee, {
-          properties: promisePrototypeMethods,
-          computed: false,
-        })
-      ) {
-        return {
-          node: node.callee.property,
-          messageId: ERROR_PROMISE,
-        };
-      }
+        // Promises
+        if (
+          isMemberExpression(node.callee, {
+            properties: promisePrototypeMethods,
+            computed: false,
+          })
+        ) {
+          return {
+            node: node.callee.property,
+            messageId: ERROR_PROMISE,
+          };
+        }
 
-      const { sourceCode } = context;
+        const { sourceCode } = context;
 
-      // IIFE
-      if (
-        (node.callee.type === 'FunctionExpression' ||
-          node.callee.type === 'ArrowFunctionExpression') &&
-        node.callee.async &&
-        !node.callee.generator
-      ) {
+        // IIFE
+        if (
+          (node.callee.type === 'FunctionExpression' ||
+            node.callee.type === 'ArrowFunctionExpression') &&
+          node.callee.async &&
+          !node.callee.generator
+        ) {
+          return {
+            node,
+            loc: getFunctionHeadLocation(node.callee, sourceCode),
+            messageId: ERROR_IIFE,
+          };
+        }
+
+        // Identifier
+        if (node.callee.type !== 'Identifier') {
+          return;
+        }
+
+        const variable = findVariable(sourceCode.getScope(node), node.callee);
+        if (!variable || variable.defs.length !== 1) {
+          return;
+        }
+
+        const [definition] = variable.defs;
+        const value =
+          definition.type === 'Variable' && definition.kind === 'const'
+            ? definition.node.init
+            : definition.node;
+        if (!value || !(isFunction(value) && !value.generator && value.async)) {
+          return;
+        }
+
         return {
           node,
-          loc: getFunctionHeadLocation(node.callee, sourceCode),
-          messageId: ERROR_IIFE,
+          messageId: ERROR_IDENTIFIER,
+          data: { name: node.callee.name },
+          suggest: [
+            {
+              messageId: SUGGESTION_ADD_AWAIT,
+              fix: fixer => fixer.insertTextBefore(node, 'await '),
+            },
+          ],
         };
-      }
-
-      // Identifier
-      if (node.callee.type !== 'Identifier') {
-        return;
-      }
-
-      const variable = findVariable(sourceCode.getScope(node), node.callee);
-      if (!variable || variable.defs.length !== 1) {
-        return;
-      }
-
-      const [definition] = variable.defs;
-      const value =
-        definition.type === 'Variable' && definition.kind === 'const'
-          ? definition.node.init
-          : definition.node;
-      if (!value || !(isFunction(value) && !value.generator && value.async)) {
-        return;
-      }
-
-      return {
-        node,
-        messageId: ERROR_IDENTIFIER,
-        data: { name: node.callee.name },
-        suggest: [
-          {
-            messageId: SUGGESTION_ADD_AWAIT,
-            fix: fixer => fixer.insertTextBefore(node, 'await '),
-          },
-        ],
-      };
-    },
-  };
-}
-
-/** @type {import('eslint').Rule.RuleModule} */
-module.exports = {
-  create,
+      },
+    };
+  },
   meta: {
     type: 'suggestion',
     docs: {
@@ -162,4 +159,4 @@ module.exports = {
     hasSuggestions: true,
     messages,
   },
-};
+});
