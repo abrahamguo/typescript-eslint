@@ -2,12 +2,13 @@ import { DefinitionType } from '@typescript-eslint/scope-manager';
 import type { TSESTree } from '@typescript-eslint/utils';
 import { AST_NODE_TYPES } from '@typescript-eslint/utils';
 
-import { createRule, formatWordList } from '../util';
-
-const {
+import {
+  createRule,
   findVariable,
+  formatWordList,
   getFunctionHeadLocation,
-} = require('@eslint-community/eslint-utils');
+} from '../util';
+
 const isMemberExpression = (
   node: TSESTree.Expression,
   options: {
@@ -47,108 +48,45 @@ const isMemberExpression = (
   }
 
   if (
-    node.property.type !== 'Identifier' ||
+    node.property.type !== AST_NODE_TYPES.Identifier ||
     !properties.includes(node.property.name)
   ) {
     return false;
   }
 
-  if (
-    // `node.computed` can be `undefined` in some parsers
-    node.computed
-  ) {
-    return false;
-  }
-
-  if (
-    Array.isArray(objects) &&
-    objects.length > 0 &&
-    (node.object.type !== 'Identifier' || !objects.includes(node.object.name))
-  ) {
-    return false;
-  }
-
-  return true;
+  return (
+    !node.computed &&
+    !(
+      Array.isArray(objects) &&
+      objects.length > 0 &&
+      (node.object.type !== AST_NODE_TYPES.Identifier ||
+        !objects.includes(node.object.name))
+    )
+  );
 };
-const isMethodCall = (node: TSESTree.Node) => {
-  const method = '';
-  const methods = ['all', 'allSettled', 'any', 'race'];
-
+const isMethodCall = (node: TSESTree.Node): node is TSESTree.CallExpression => {
   if (node.type !== AST_NODE_TYPES.CallExpression) {
     return false;
   }
 
-  let {
-    argumentsLength,
-    minimumArguments,
-    maximumArguments,
-    allowSpreadElement,
-    optional,
-  } = {
-    argumentsLength: 1,
-    minimumArguments: undefined,
-    maximumArguments: undefined,
-    allowSpreadElement: undefined,
-    optional: undefined,
-  };
-  let names = undefined;
-
-  if (
-    (optional === true && node.optional !== optional) ||
-    (optional === false &&
-      // `node.optional` can be `undefined` in some parsers
-      node.optional)
-  ) {
+  const argumentsLength = 1;
+  if (node.arguments.length !== argumentsLength) {
     return false;
   }
 
   if (
-    typeof argumentsLength === 'number' &&
-    node.arguments.length !== argumentsLength
-  ) {
-    return false;
-  }
-
-  if (minimumArguments !== 0 && node.arguments.length < minimumArguments) {
-    return false;
-  }
-
-  if (
-    Number.isFinite(maximumArguments) &&
-    node.arguments.length > maximumArguments
-  ) {
-    return false;
-  }
-
-  if (!allowSpreadElement) {
-    const maximumArgumentsLength = Number.isFinite(maximumArguments)
-      ? maximumArguments
-      : argumentsLength;
-    if (
-      typeof maximumArgumentsLength === 'number' &&
-      node.arguments.some(
-        (node, index) =>
-          node.type === AST_NODE_TYPES.SpreadElement &&
-          index < maximumArgumentsLength,
-      )
-    ) {
-      return false;
-    }
-  }
-
-  if (
-    Array.isArray(names) &&
-    names.length > 0 &&
-    (node.callee.type !== AST_NODE_TYPES.Identifier ||
-      !names.includes(node.callee.name))
+    node.arguments.some(
+      (node, index) =>
+        node.type === AST_NODE_TYPES.SpreadElement && index < argumentsLength,
+    )
   ) {
     return false;
   }
 
   return isMemberExpression(node.callee, {
     object: 'Promise',
-    property: method,
-    properties: methods,
+    property: '',
+    properties: ['all', 'allSettled', 'any', 'race'],
     optional: undefined,
   });
 };
@@ -171,7 +109,11 @@ const isTopLevelCallExpression = (node: TSESTree.Node): boolean => {
     return false;
   }
 
-  for (let ancestor = node.parent; ancestor; ancestor = ancestor.parent) {
+  for (
+    let ancestor: TSESTree.Node | undefined = node.parent;
+    ancestor;
+    ancestor = ancestor.parent
+  ) {
     if (
       [
         AST_NODE_TYPES.FunctionDeclaration,
@@ -201,9 +143,11 @@ const isAwaitExpressionArgument = (node: TSESTree.Expression) => {
 
 // `Promise.{all,allSettled,any,race}([foo()])`
 export default createRule({
+  name: 'prefer-await',
+  defaultOptions: [],
   create(context) {
     if (context.filename.toLowerCase().endsWith('.cjs')) {
-      return;
+      return {};
     }
 
     return {
@@ -244,8 +188,8 @@ export default createRule({
 
         // IIFE
         if (
-          (callee.type === 'FunctionExpression' ||
-            callee.type === 'ArrowFunctionExpression') &&
+          (callee.type === AST_NODE_TYPES.FunctionExpression ||
+            callee.type === AST_NODE_TYPES.ArrowFunctionExpression) &&
           callee.async &&
           !callee.generator
         ) {
@@ -258,7 +202,7 @@ export default createRule({
         }
 
         // Identifier
-        if (callee.type !== 'Identifier') {
+        if (callee.type !== AST_NODE_TYPES.Identifier) {
           return;
         }
 
@@ -270,17 +214,16 @@ export default createRule({
         const [definition] = variable.defs;
         const value =
           definition.type === DefinitionType.Variable &&
+          'kind' in definition &&
           definition.kind === 'const'
             ? definition.node.init
             : definition.node;
         if (
           !value ||
           !(
-            [
-              'FunctionDeclaration',
-              'FunctionExpression',
-              'ArrowFunctionExpression',
-            ].includes(value.type) &&
+            (value.type === AST_NODE_TYPES.FunctionDeclaration ||
+              value.type === AST_NODE_TYPES.FunctionExpression ||
+              value.type === AST_NODE_TYPES.ArrowFunctionExpression) &&
             !value.generator &&
             value.async
           )
