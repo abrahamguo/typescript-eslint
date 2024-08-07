@@ -319,6 +319,7 @@ export default tseslint.config(
       //
 
       'jsdoc/informative-docs': 'error',
+      'unicorn/custom-error-definition': 'error',
       'unicorn/no-typeof-undefined': 'error',
       'unicorn/no-useless-spread': 'error',
     },
