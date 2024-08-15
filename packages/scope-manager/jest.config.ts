@@ -1,8 +1,4 @@
-'use strict';
-
-// @ts-check
-
-const baseConfig = require('../../jest.config.base.js');
+const baseConfig = require('../../jest.config.base.ts');
 
 /** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {

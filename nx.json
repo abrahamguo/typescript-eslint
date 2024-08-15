@@ -32,7 +32,7 @@
       "inputs": [
         "default",
         "^production",
-        "{workspaceRoot}/jest.config.js",
+        "{workspaceRoot}/jest.config.ts",
         "{workspaceRoot}/jest.config.base.js"
       ],
       "outputs": ["{projectRoot}/coverage"],
@@ -42,13 +42,13 @@
       "inputs": [
         "default",
         "^production",
-        "{workspaceRoot}/jest.config.js",
+        "{workspaceRoot}/jest.config.ts",
         "{workspaceRoot}/jest.config.base.js"
       ],
       "outputs": ["{projectRoot}/coverage"],
       "cache": true,
       "options": {
-        "jestConfig": "{projectRoot}/jest.config.js",
+        "jestConfig": "{projectRoot}/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {

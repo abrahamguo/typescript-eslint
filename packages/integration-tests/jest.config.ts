@@ -1,13 +1,10 @@
-'use strict';
-
 // pack the packages ahead of time and create a mapping for use in the tests
 require('tsx/cjs');
 const { tseslintPackages } = require('./tools/pack-packages');
 
-// @ts-check
 /** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {
-  ...require('../../jest.config.base.js'),
+  ...require('../../jest.config.base.ts'),
   collectCoverage: false,
   globals: {
     tseslintPackages,

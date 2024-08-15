@@ -1,8 +1,5 @@
-'use strict';
-
 const path = require('node:path');
 
-// @ts-check
 /** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {
   collectCoverage: true,
