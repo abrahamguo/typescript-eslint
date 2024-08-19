@@ -1,6 +1,7 @@
+import path from 'node:path';
+
 import { parseForESLint } from '@typescript-eslint/parser';
 import type { TSESTree } from '@typescript-eslint/typescript-estree';
-import path from 'path';
 import * as ts from 'typescript';
 
 import { getTypeFlags, isTypeFlagSet } from '../src';
@@ -11,6 +12,7 @@ describe('typeFlagUtils', () => {
 
   function getType(code: string): ts.Type {
     const { ast, services } = parseForESLint(code, {
+      disallowAutomaticSingleRunInference: true,
       project: './tsconfig.json',
       filePath: path.join(rootDir, 'file.ts'),
       tsconfigRootDir: rootDir,

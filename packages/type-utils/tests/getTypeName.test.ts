@@ -1,6 +1,7 @@
+import path from 'node:path';
+
 import { parseForESLint } from '@typescript-eslint/parser';
 import type { TSESTree } from '@typescript-eslint/typescript-estree';
-import path from 'path';
 import type * as ts from 'typescript';
 
 import { getTypeName } from '../src';
@@ -11,6 +12,7 @@ describe('getTypeName', () => {
     const rootDir = path.join(__dirname, 'fixtures');
 
     const { ast, services } = parseForESLint(code, {
+      disallowAutomaticSingleRunInference: true,
       project: './tsconfig.json',
       filePath: path.join(rootDir, 'file.ts'),
       tsconfigRootDir: rootDir,

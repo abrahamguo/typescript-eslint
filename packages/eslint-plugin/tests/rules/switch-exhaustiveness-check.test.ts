@@ -1,15 +1,17 @@
+import path from 'node:path';
+
 import { noFormat, RuleTester } from '@typescript-eslint/rule-tester';
-import path from 'path';
 
 import switchExhaustivenessCheck from '../../src/rules/switch-exhaustiveness-check';
 
 const rootPath = path.join(process.cwd(), 'tests/fixtures/');
 
 const ruleTester = new RuleTester({
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    tsconfigRootDir: rootPath,
-    project: './tsconfig.json',
+  languageOptions: {
+    parserOptions: {
+      tsconfigRootDir: rootPath,
+      project: './tsconfig.json',
+    },
   },
 });
 
