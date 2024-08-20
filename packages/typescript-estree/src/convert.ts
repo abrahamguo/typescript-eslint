@@ -1,5 +1,5 @@
 // There's lots of funny stuff due to the typing of ts.Node
-/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access */
+import { TypeNode } from '@typescript-eslint/ast-spec';
 import * as ts from 'typescript';
 
 import { getDecorators, getModifiers } from './getModifiers';
@@ -37,7 +37,12 @@ import type {
   ParserWeakMapESTreeToTSNode,
 } from './parser-options';
 import type { SemanticOrSyntacticError } from './semantic-or-syntactic-errors';
-import type { TSESTree, TSESTreeToTSNode, TSNode } from './ts-estree';
+import {
+  EstreeToTsNodeTypes,
+  TSESTree,
+  TSESTreeToTSNode,
+  TSNode,
+} from './ts-estree';
 import { AST_NODE_TYPES } from './ts-estree';
 
 const SyntaxKind = ts.SyntaxKind;
@@ -251,7 +256,10 @@ export class Converter {
    * @param parent parentNode
    * @returns the converted ESTree node
    */
-  private convertChild(child?: ts.Node, parent?: ts.Node): any {
+  private convertChild<T extends TSESTree.Node>(
+    child?: EstreeToTsNodeTypes[T['type']],
+    parent?: ts.Node,
+  ): T {
     return this.converter(child, parent, false);
   }
 
@@ -310,8 +318,8 @@ export class Converter {
       type: AST_NODE_TYPES.TSTypeAnnotation,
       loc,
       range,
-      typeAnnotation: this.convertChild(child),
-    } as TSESTree.TSTypeAnnotation;
+      typeAnnotation: this.convertChild<TypeNode>(child),
+    };
   }
 
   /**
