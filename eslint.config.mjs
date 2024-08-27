@@ -44,7 +44,6 @@ export default tseslint.config(
       // https://github.com/jsx-eslint/eslint-plugin-react/issues/3699
       ['react']: fixupPluginRules(reactPlugin),
       ['simple-import-sort']: simpleImportSortPlugin,
-      ['sonarjs']: sonarjsPlugin,
       ['unicorn']: unicornPlugin,
     },
     /* eslint-enable no-useless-computed-key */
@@ -78,7 +77,6 @@ export default tseslint.config(
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   jsdocPlugin.configs['flat/recommended-typescript-error'],
-  sonarjsPlugin.configs.recommended,
 
   // base config
   {
@@ -316,6 +314,15 @@ export default tseslint.config(
       'jsdoc/tag-lines': 'off',
 
       'sonarjs/no-duplicated-branches': 'error',
+      ...Object.fromEntries(
+        Object.entries(sonarjsPlugin.rules).flatMap(([name, { meta }]) =>
+          /^S\d{3,4}$/.test(name) ||
+          meta.deprecated ||
+          eslint.configs.all.rules[name]
+            ? []
+            : [[name, 'error']],
+        ),
+      ),
 
       //
       // eslint-plugin-unicorn
