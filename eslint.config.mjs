@@ -319,7 +319,10 @@ export default tseslint.config(
         Object.entries(sonarjsPlugin.rules).flatMap(([name, { meta }]) =>
           /^S\d{3,4}$/.test(name) ||
           meta.deprecated ||
-          eslint.configs.all.rules[name]
+          eslint.configs.all.rules[name] ||
+          /^(no-inconsistent-returns|pluginRules-of-hooks|prefer-enum-initializers|sonar-no-fallthrough)$/.test(
+            name,
+          )
             ? []
             : [[`sonarjs/${name}`, 'error']],
         ),
