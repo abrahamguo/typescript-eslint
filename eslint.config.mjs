@@ -78,7 +78,7 @@ export default tseslint.config(
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   jsdocPlugin.configs['flat/recommended-typescript-error'],
-  sonarJsPlugin.configs.recommended,
+  sonarjsPlugin.configs.recommended,
 
   // base config
   {

@@ -1,7 +1,14 @@
 console.log(
   Object.fromEntries(
     Object.entries(
-      Object.groupBy(
+      (
+        Object as typeof Object & {
+          groupBy: <T>(
+            arr: T[],
+            fn: (item: T) => string,
+          ) => Record<string, T[]>;
+        }
+      ).groupBy(
         (
           (await import(`./index.json`)) as {
             default: { messages: { ruleId: string }[] }[];
