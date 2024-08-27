@@ -44,6 +44,7 @@ export default tseslint.config(
       // https://github.com/jsx-eslint/eslint-plugin-react/issues/3699
       ['react']: fixupPluginRules(reactPlugin),
       ['simple-import-sort']: simpleImportSortPlugin,
+      ['sonarjs']: sonarjsPlugin,
       ['unicorn']: unicornPlugin,
     },
     /* eslint-enable no-useless-computed-key */
@@ -320,7 +321,7 @@ export default tseslint.config(
           meta.deprecated ||
           eslint.configs.all.rules[name]
             ? []
-            : [[name, 'error']],
+            : [[`sonarjs/${name}`, 'error']],
         ),
       ),
 
