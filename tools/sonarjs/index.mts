@@ -10,7 +10,7 @@ console.log(
         }
       ).groupBy(
         (
-          (await import(`./index.json`)) as {
+          (await import(`../../.nx/cache/sonarjs.json`)) as {
             default: { messages: { ruleId: string }[] }[];
           }
         ).default.flatMap(({ messages }) => messages),
