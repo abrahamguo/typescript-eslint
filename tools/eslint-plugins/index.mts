@@ -10,7 +10,7 @@ console.log(
         }
       ).groupBy(
         (
-          (await import(`../../.nx/cache/sonarjs.json`)) as {
+          (await import(`../../.nx/cache/eslint-plugins.json`)) as {
             default: { messages: { ruleId: string }[] }[];
           }
         ).default.flatMap(({ messages }) => messages),
