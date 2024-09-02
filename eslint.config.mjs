@@ -45,10 +45,10 @@ export default tseslint.config(
       ['react']: fixupPluginRules(reactPlugin),
       ['simple-import-sort']: simpleImportSortPlugin,
       ['sonarjs']: sonarjsPlugin,
-      ['unicorn']: unicornPlugin,
     },
     /* eslint-enable no-useless-computed-key */
   },
+  unicornPlugin.configs['flat/all'],
   {
     // config with just ignores is the replacement for `.eslintignore`
     ignores: [
