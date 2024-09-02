@@ -16,7 +16,14 @@ console.log(
         ).default.flatMap(({ messages }) => messages),
         ({ ruleId }) => ruleId,
       ),
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    ).map(([ruleId, results]) => [ruleId, results!.length]),
+    )
+      .filter(
+        ([name]) =>
+          !/^(sonarjs\/(bool-param-default|cyclomatic-complexity|elseif-without-else|file-header|nested-control-flow)|unicorn\/(prevent-abbreviations|set-has|switch-case-braces))$/.test(
+            name,
+          ),
+      )
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([ruleId, results]) => [ruleId, results.length]),
   ),
 );
