@@ -19,7 +19,7 @@ console.log(
     )
       .filter(
         ([name]) =>
-          !/^(sonarjs\/(bool-param-default|cyclomatic-complexity|elseif-without-else|file-header|nested-control-flow)|unicorn\/(prevent-abbreviations|set-has|switch-case-braces))$/.test(
+          !/^(sonarjs\/(bool-param-default|cyclomatic-complexity|elseif-without-else|expression-complexity|file-header|fixme-tag|for-in|function-return-type|max-switch-cases|nested-control-flow|no-(array-index-key|empty-interface|nested-(assignment|conditional))|regex-complexity|sonar-max-lines(-per-function)?)|unicorn\/(no-(await-expression-member|nested-ternary|static-only-class)|prefer-(set-has|string-raw)|prevent-abbreviations|set-has|switch-case-braces))$/.test(
             name,
           ),
       )
