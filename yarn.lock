@@ -6255,12 +6255,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@link:./tools/dummypkg::locator=%40typescript-eslint%2Ftypescript-eslint%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@types/eslint@link:./tools/dummypkg::locator=%40typescript-eslint%2Ftypescript-eslint%40workspace%3A."
-  languageName: node
-  linkType: soft
-
 "@types/estree-jsx@npm:^1.0.0":
   version: 1.0.5
   resolution: "@types/estree-jsx@npm:1.0.5"
@@ -7090,7 +7084,7 @@ __metadata:
     eslint-plugin-react: ^7.34.1
     eslint-plugin-react-hooks: ^4.6.0
     eslint-plugin-simple-import-sort: ^10.0.0
-    eslint-plugin-sonarjs: ^2.0.1
+    eslint-plugin-sonarjs: latest
     eslint-plugin-unicorn: ^50.0.1
     execa: 7.2.0
     glob: ^10.3.12
@@ -11270,9 +11264,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-sonarjs@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "eslint-plugin-sonarjs@npm:2.0.1"
+"eslint-plugin-sonarjs@npm:latest":
+  version: 2.0.2
+  resolution: "eslint-plugin-sonarjs@npm:2.0.2"
   dependencies:
     "@babel/core": 7.24.3
     "@babel/eslint-parser": 7.24.1
@@ -11281,7 +11275,6 @@ __metadata:
     "@babel/preset-flow": 7.24.1
     "@babel/preset-react": 7.24.1
     "@eslint-community/regexpp": 4.10.0
-    "@types/eslint": 8.56.10
     "@typescript-eslint/eslint-plugin": 7.16.1
     "@typescript-eslint/utils": ^7.16.1
     builtin-modules: 3.3.0
@@ -11296,11 +11289,11 @@ __metadata:
     minimatch: ^9.0.3
     scslre: 0.3.0
     semver: 7.6.0
-    typescript: 5.4.3
+    typescript: "*"
     vue-eslint-parser: 9.4.3
   peerDependencies:
     eslint: ^8.0.0 || ^9.0.0
-  checksum: 1e9a028eabd8922e2e9f28feaf578550f6db9e418a25d8eb08b18a0adf81b66ff94b9746509258afa0ddd95f87b7e94288db0c2ff66ebaddccb404120c30327d
+  checksum: e123ca5c199b99ce83963ed3519d55d01a0ebfa5d6a24c311beca5efd9611cefceeaf11e98d5762ffbaf13074cba428edc6b64f994d50a5eb08c866eed682722
   languageName: node
   linkType: hard
 
