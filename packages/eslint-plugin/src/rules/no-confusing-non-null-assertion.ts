@@ -14,15 +14,11 @@ export default createRule({
     },
     hasSuggestions: true,
     messages: {
-      confusingEqual:
-        'Confusing combinations of non-null assertion and equal test like "a! == b", which looks very similar to not equal "a !== b".',
-      confusingAssign:
-        'Confusing combinations of non-null assertion and equal test like "a! = b", which looks very similar to not equal "a != b".',
-      notNeedInEqualTest: 'Unnecessary non-null assertion (!) in equal test.',
-      notNeedInAssign:
-        'Unnecessary non-null assertion (!) in assignment left hand.',
+      confusing:
+        'Confusing combination of non-null assertion and "{{operator}}" like "a! {{operator}} b", which looks very similar to not-{{similarTest}} "a !{{operator}} b".',
+      notNeeded: 'Unnecessary non-null assertion (!) in {{operation}}.',
       wrapUpLeft:
-        'Wrap up left hand to avoid putting non-null assertion "!" and "=" together.',
+        'Wrap up left hand to avoid putting non-null assertion "!" and "{{operator}}" together.',
     },
     schema: [],
   },
@@ -38,12 +34,23 @@ export default createRule({
           return node.type === AST_NODE_TYPES.TSNonNullExpression;
         }
 
-        if (
-          node.operator === '==' ||
-          node.operator === '===' ||
-          node.operator === '='
-        ) {
-          const isAssign = node.operator === '=';
+        const { operator } = node;
+        const data = [
+          {
+            operator: '=',
+            operation: 'assignment left hand',
+            similarTest: 'equal',
+          },
+          { operator: '==', operation: 'equal test', similarTest: 'equal' },
+          { operator: '===', operation: 'equal test', similarTest: 'equal' },
+          { operator: 'in', operation: 'in test', similarTest: 'in' },
+          {
+            operator: 'instanceof',
+            operation: 'instanceof test',
+            similarTest: 'instanceof',
+          },
+        ].find(data => data.operator === operator);
+        if (data) {
           const leftHandFinalToken = context.sourceCode.getLastToken(node.left);
           const tokenAfterLeft = context.sourceCode.getTokenAfter(node.left);
           if (
@@ -51,36 +58,31 @@ export default createRule({
             leftHandFinalToken.value === '!' &&
             tokenAfterLeft?.value !== ')'
           ) {
-            if (isLeftHandPrimaryExpression(node.left)) {
-              context.report({
-                node,
-                messageId: isAssign ? 'confusingAssign' : 'confusingEqual',
-                suggest: [
-                  {
-                    messageId: isAssign
-                      ? 'notNeedInAssign'
-                      : 'notNeedInEqualTest',
-                    fix: (fixer): TSESLint.RuleFix[] => [
-                      fixer.remove(leftHandFinalToken),
-                    ],
-                  },
-                ],
-              });
-            } else {
-              context.report({
-                node,
-                messageId: isAssign ? 'confusingAssign' : 'confusingEqual',
-                suggest: [
-                  {
-                    messageId: 'wrapUpLeft',
-                    fix: (fixer): TSESLint.RuleFix[] => [
-                      fixer.insertTextBefore(node.left, '('),
-                      fixer.insertTextAfter(node.left, ')'),
-                    ],
-                  },
-                ],
-              });
-            }
+            const operation =
+              operator === '=' ? 'assignment left hand' : 'equal test';
+            context.report({
+              node,
+              messageId: 'confusing',
+              data,
+              suggest: [
+                isLeftHandPrimaryExpression(node.left)
+                  ? {
+                      messageId: 'notNeeded',
+                      data: { operation },
+                      fix: (fixer): TSESLint.RuleFix[] => [
+                        fixer.replaceText(leftHandFinalToken, ' '),
+                      ],
+                    }
+                  : {
+                      messageId: 'wrapUpLeft',
+                      data: { operator },
+                      fix: (fixer): TSESLint.RuleFix[] => [
+                        fixer.insertTextBefore(node.left, '('),
+                        fixer.insertTextAfter(node.left, ')'),
+                      ],
+                    },
+              ],
+            });
           }
         }
       },
