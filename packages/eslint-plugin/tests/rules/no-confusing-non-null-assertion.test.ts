@@ -26,7 +26,11 @@ ruleTester.run('no-confusing-non-null-assertion', rule, {
       errors: [
         {
           messageId: 'confusing',
-          data: { operation: 'equal test', operator: '==' },
+          data: {
+            operation: 'equal test',
+            operator: '==',
+            similarTest: 'equal',
+          },
           line: 1,
           column: 1,
           suggestions: [{ messageId: 'notNeeded', output: 'a  == b;' }],
@@ -170,6 +174,7 @@ ruleTester.run('no-confusing-non-null-assertion', rule, {
       errors: [
         {
           messageId: 'confusing',
+          data: { operator: 'in', operation: 'in', similarTest: 'in' },
           suggestions: [
             { messageId: 'notNeeded', output: 'console.log(a  in b);' },
           ],

@@ -15,7 +15,7 @@ export default createRule({
     hasSuggestions: true,
     messages: {
       confusing:
-        'Confusing combinations of non-null assertion and {{operation}} like "a! {{operator}} b", which looks very similar to {{similarTo}} "a !{{operator}} b".',
+        'Confusing combination of non-null assertion and "{{operator}}" like "a! {{operator}} b", which looks very similar to not-{{similarTest}} "a !{{operator}} b".',
       notNeeded: 'Unnecessary non-null assertion (!) in {{operation}}.',
       wrapUpLeft:
         'Wrap up left hand to avoid putting non-null assertion "!" and "{{operator}}" together.',
@@ -35,12 +35,22 @@ export default createRule({
         }
 
         const { operator } = node;
-        const operators = [
-          { test: '=', operation: 'assignment left hand' },
-          { test: '===?', operation: 'test' },
-          { test: 'in(stanceof)?', operation: '{{operator}} test' },
-        ];
-        if (['=', '==', '===', 'in', 'instanceof'].includes(operator)) {
+        const data = [
+          {
+            operator: '=',
+            operation: 'assignment left hand',
+            similarTest: 'equal',
+          },
+          { operator: '==', operation: 'equal test', similarTest: 'equal' },
+          { operator: '===', operation: 'equal test', similarTest: 'equal' },
+          { operator: 'in', operation: 'in test', similarTest: 'in' },
+          {
+            operator: 'instanceof',
+            operation: 'instanceof test',
+            similarTest: 'instanceof',
+          },
+        ].find(data => data.operator === operator);
+        if (data) {
           const leftHandFinalToken = context.sourceCode.getLastToken(node.left);
           const tokenAfterLeft = context.sourceCode.getTokenAfter(node.left);
           if (
@@ -53,7 +63,7 @@ export default createRule({
             context.report({
               node,
               messageId: 'confusing',
-              data: { operation, operator, similarTo: 'not equal' },
+              data,
               suggest: [
                 isLeftHandPrimaryExpression(node.left)
                   ? {
