@@ -47,10 +47,10 @@ export default tseslint.config(
       ['regexp']: regexpPlugin,
       ['simple-import-sort']: simpleImportSortPlugin,
       ['sonarjs']: sonarjsPlugin,
-      ['unicorn']: unicornPlugin,
     },
     /* eslint-enable no-useless-computed-key */
   },
+  unicornPlugin.configs['flat/all'],
   {
     // config with just ignores is the replacement for `.eslintignore`
     ignores: [
@@ -80,6 +80,7 @@ export default tseslint.config(
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   jsdocPlugin.configs['flat/recommended-typescript-error'],
+  regexpPlugin.configs['flat/all'],
 
   // base config
   {
@@ -330,6 +331,18 @@ export default tseslint.config(
       'regexp/prefer-w': 'error',
 
       'sonarjs/no-duplicated-branches': 'error',
+      ...Object.fromEntries(
+        Object.entries(sonarjsPlugin.rules).flatMap(([name, { meta }]) =>
+          /^S\d{3,4}$/.test(name) ||
+          meta.deprecated ||
+          eslint.configs.all.rules[name] ||
+          /^(no-inconsistent-returns|pluginRules-of-hooks|prefer-enum-initializers|sonar-no-fallthrough)$/.test(
+            name,
+          )
+            ? []
+            : [[`sonarjs/${name}`, 'error']],
+        ),
+      ),
 
       //
       // eslint-plugin-unicorn
@@ -407,6 +420,7 @@ export default tseslint.config(
       'jest/prefer-spy-on': 'error',
       'jest/valid-expect': 'error',
       'jest/no-deprecated-functions': 'error',
+      'sonarjs/no-duplicate-string': 'off',
     },
   },
   // plugin rule tests
