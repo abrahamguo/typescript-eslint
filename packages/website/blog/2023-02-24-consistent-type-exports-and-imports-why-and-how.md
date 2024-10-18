@@ -34,7 +34,7 @@ export type { SomeThing };
 The key difference with `export type` and `import type` is that they _do not represent runtime code_.
 Attempting to use a _value_ imported as only a _type_ in runtime code will cause a TypeScript error:
 
-```ts twoslash
+```ts
 import type { SomeThing } from './some-module.js';
 
 new SomeThing();

@@ -8,12 +8,16 @@ import type { UserThemeConfig as ThemeCommonConfig } from '@docusaurus/theme-com
 import type { UserThemeConfig as AlgoliaThemeConfig } from '@docusaurus/theme-search-algolia';
 import type { Config } from '@docusaurus/types';
 import { version } from '@typescript-eslint/parser/package.json';
+import remarkHTMLtoJSX from './plugins/remark-html-to-jsx';
 
 import { blogFooter } from './plugins/blog-footer';
 import { generatedRuleDocs } from './plugins/generated-rule-docs';
 import { rulesMeta } from './rulesMeta';
 
-const remarkPlugins: MDXPlugin[] = [[npm2yarnPlugin, { sync: true }]];
+const remarkPlugins: MDXPlugin[] = [
+  [npm2yarnPlugin, { sync: true }],
+  remarkHTMLtoJSX,
+];
 
 const githubUrl = 'https://github.com/typescript-eslint/typescript-eslint';
 
@@ -337,7 +341,10 @@ const config: Config = {
   organizationName: 'typescript-eslint',
   projectName: 'typescript-eslint',
   clientModules: [require.resolve('./src/clientModules.js')],
-  presets: [['classic', presetClassicOptions]],
+  presets: [
+    ['classic', presetClassicOptions],
+    ['docusaurus-preset-shiki-twoslash', { themes: ['nord'] }],
+  ],
   customFields: {
     rules: rulesMeta,
   },

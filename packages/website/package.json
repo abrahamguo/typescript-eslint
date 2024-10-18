@@ -27,6 +27,7 @@
     "@uiw/react-shields": "2.0.1",
     "clsx": "^2.1.0",
     "docusaurus-plugin-typedoc": "^1.0.1",
+    "docusaurus-preset-shiki-twoslash": "^1.1.41",
     "eslint": "*",
     "json5": "^2.2.3",
     "konamimojisplosion": "^0.5.2",
@@ -62,6 +63,7 @@
     "make-dir": "*",
     "mdast-util-from-markdown": "^2.0.1",
     "mdast-util-mdx": "^3.0.0",
+    "micromark-extension-mdxjs": "^3.0.0",
     "monaco-editor": "~0.51.0",
     "raw-loader": "^4.0.2",
     "rimraf": "*",
@@ -71,6 +73,7 @@
     "stylelint-order": "^6.0.4",
     "tsx": "*",
     "unified": "^11.0.4",
+    "unist-util-visit": "^5.0.0",
     "vfile": "^6.0.1",
     "webpack": "^5.91.0"
   },
